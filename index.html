@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>MCR Group</title>
+<!-- Шрифты загружаются асинхронно — не блокируют рендер на iOS -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet"></noscript>
+<style>
+/* THEME VARIABLES */
+:root {
+  --gold:#c9a84c; --mine:#c9a84c; --construction:#4a7fa5; --recycling:#5a9e6f; --new:#7a7a7a;
+  --nav-h:68px;
+  --bg:#0a0a0a; --bg-nav:rgba(10,10,10,0.95); --surface:#121212;
+  --text:#f0ede6; --text-2:rgba(240,237,230,0.65); --text-3:rgba(240,237,230,0.38);
+  --border:rgba(240,237,230,0.08); --border-h:rgba(201,168,76,0.35); --card-h:rgba(240,237,230,0.02);
+}
+html.light {
+  --bg:#f5f2eb; --bg-nav:rgba(245,242,235,0.96); --surface:#edeae2;
+  --text:#111111; --text-2:#3a3a3a; --text-3:#888888;
+  --border:rgba(0,0,0,0.10); --border-h:rgba(201,168,76,0.5); --card-h:rgba(0,0,0,0.02);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{font-size:16px;}
+body{background:var(--bg);color:var(--text);font-family:'Raleway',sans-serif;font-weight:400;overflow-x:hidden;-webkit-font-smoothing:antialiased;-webkit-transition:background 0.3s,color 0.3s;transition:background 0.3s,color 0.3s;}
+
+/* LOADING — используем display:none сразу после fade, не зависим от CSS переменных */
+#loading{
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:#0a0a0a;
+  display:-webkit-box;display:-webkit-flex;display:flex;
+  -webkit-box-align:center;-webkit-align-items:center;align-items:center;
+  -webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;
+  z-index:9999;
+  -webkit-transition:opacity 0.45s ease;transition:opacity 0.45s ease;
+}
+#loading.fade{opacity:0;pointer-events:none;}
+.loading-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2rem;font-weight:600;letter-spacing:.35em;
+  color:#c9a84c;text-transform:uppercase;
+  -webkit-animation:ldpulse 1.2s ease infinite;animation:ldpulse 1.2s ease infinite;
+}
+@-webkit-keyframes ldpulse{0%,100%{opacity:0.4}50%{opacity:1}}
+@keyframes ldpulse{0%,100%{opacity:0.4}50%{opacity:1}}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:-webkit-box;display:-webkit-flex;display:flex;
+  -webkit-box-align:center;-webkit-align-items:center;align-items:center;
+  -webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;
+  height:var(--nav-h);padding:0 52px;
+  background:var(--bg-nav);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;text-decoration:none;cursor:pointer;}
+.nav-center{display:-webkit-box;display:-webkit-flex;display:flex;list-style:none;}
+.nav-center li{margin-right:36px;}
+.nav-center li:last-child{margin-right:0;}
+.nav-center a{color:var(--text-2);text-decoration:none;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-weight:500;-webkit-transition:color .25s;transition:color .25s;}
+.nav-center a:hover{color:var(--gold);}
+.nav-right{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;}
+/* theme switch */
+.theme-switch{position:relative;width:48px;height:26px;cursor:pointer;margin-right:20px;}
+.theme-switch input{display:none;}
+.theme-track{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:13px;background:rgba(255,255,255,0.1);border:1px solid var(--border);-webkit-transition:background 0.35s,border-color 0.35s;transition:background 0.35s,border-color 0.35s;}
+html.light .theme-track{background:rgba(201,168,76,0.18);border-color:rgba(201,168,76,0.5);}
+.theme-thumb{position:absolute;top:4px;left:4px;width:16px;height:16px;border-radius:50%;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;font-size:11px;line-height:1;background:rgba(240,237,230,0.6);-webkit-transition:-webkit-transform 0.35s cubic-bezier(0.34,1.56,0.64,1),background 0.35s;transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),background 0.35s;}
+html.light .theme-thumb{-webkit-transform:translateX(22px);transform:translateX(22px);background:var(--gold);color:#fff;}
+/* lang */
+.nav-lang{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;}
+.lang-btn{cursor:pointer;padding:4px 8px;color:var(--text-3);border:none;background:none;font-family:'Raleway',sans-serif;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;font-weight:500;-webkit-transition:color .2s;transition:color .2s;}
+.lang-btn:hover{color:var(--text);}
+.lang-btn.active{color:var(--gold);}
+.lang-sep{color:var(--border);font-size:.65rem;}
+/* burger */
+.burger{display:none;-webkit-flex-direction:column;flex-direction:column;cursor:pointer;padding:8px;background:none;border:none;}
+.burger span{display:block;width:22px;height:1.5px;background:var(--text);margin-bottom:5px;-webkit-transition:all .3s;transition:all .3s;}
+.burger span:last-child{margin-bottom:0;}
+.burger.open span:first-child{-webkit-transform:translateY(6.5px) rotate(45deg);transform:translateY(6.5px) rotate(45deg);}
+.burger.open span:nth-child(2){opacity:0;}
+.burger.open span:last-child{-webkit-transform:translateY(-6.5px) rotate(-45deg);transform:translateY(-6.5px) rotate(-45deg);}
+/* mobile nav */
+.mobile-nav{display:none;position:fixed;top:var(--nav-h);left:0;right:0;bottom:0;z-index:190;background:var(--bg-nav);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);-webkit-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-transform:translateX(100%);transform:translateX(100%);-webkit-transition:-webkit-transform .35s ease;transition:transform .35s ease;}
+.mobile-nav.open{-webkit-transform:translateX(0);transform:translateX(0);}
+.mobile-nav a{display:block;font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--text);text-decoration:none;letter-spacing:.04em;margin-bottom:28px;}
+.mobile-lang{display:-webkit-box;display:-webkit-flex;display:flex;}
+.mobile-lang button{background:none;border:1px solid var(--border);color:var(--text-2);font-family:'Raleway',sans-serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:8px 16px;cursor:pointer;font-weight:500;-webkit-transition:all .25s;transition:all .25s;margin-right:10px;}
+.mobile-lang button:last-child{margin-right:0;}
+.mobile-lang button.active{border-color:var(--gold);color:var(--gold);}
+.mobile-theme{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;margin-top:24px;}
+.mobile-theme-label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-3);font-weight:500;margin-right:12px;}
+
+/* HERO */
+.hero{height:100vh;min-height:600px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;position:relative;text-align:center;overflow:hidden;padding:0 24px;}
+.hero-bg{position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(201,168,76,.08) 0%,transparent 70%),radial-gradient(ellipse 60% 80% at 80% 80%,rgba(74,127,165,.05) 0%,transparent 60%),radial-gradient(ellipse 50% 70% at 20% 70%,rgba(90,158,111,.04) 0%,transparent 60%);}
+.hero-grid{position:absolute;top:0;left:0;right:0;bottom:0;background-image:linear-gradient(rgba(201,168,76,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.04) 1px,transparent 1px);background-size:80px 80px;-webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 80%);mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 80%);}
+.hero-tagline{font-family:'Cormorant Garamond',serif;font-size:.9rem;letter-spacing:.4em;color:var(--gold);text-transform:uppercase;margin-bottom:22px;position:relative;-webkit-animation:fadeUp .9s ease both .2s;animation:fadeUp .9s ease both .2s;}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:8rem;font-weight:300;line-height:.9;color:var(--text);position:relative;-webkit-animation:fadeUp .9s ease both .4s;animation:fadeUp .9s ease both .4s;}
+@media(max-width:768px){.hero-title{font-size:4.5rem;}}
+@media(max-width:420px){.hero-title{font-size:3.5rem;}}
+.hero-title span{color:var(--gold);font-style:italic;}
+.hero-sub{margin-top:26px;font-size:.8rem;letter-spacing:.22em;color:var(--text-2);text-transform:uppercase;position:relative;-webkit-animation:fadeUp .9s ease both .6s;animation:fadeUp .9s ease both .6s;font-weight:500;}
+.hero-scroll{position:absolute;bottom:32px;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;align-items:center;}
+.hero-scroll span{font-size:.6rem;letter-spacing:.3em;color:var(--text-3);text-transform:uppercase;margin-bottom:8px;}
+.scroll-line{width:1px;height:44px;background:linear-gradient(to bottom,var(--gold),transparent);-webkit-animation:pulse 2s ease infinite;animation:pulse 2s ease infinite;}
+@-webkit-keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+@-webkit-keyframes fadeUp{from{opacity:0;-webkit-transform:translateY(20px);transform:translateY(20px)}to{opacity:1;-webkit-transform:translateY(0);transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* OVERVIEW */
+.overview{padding:88px 52px;max-width:1400px;margin:0 auto;}
+.section-label{font-size:.65rem;letter-spacing:.4em;color:var(--gold);text-transform:uppercase;margin-bottom:12px;font-weight:600;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:var(--text);margin-bottom:52px;line-height:1.1;}
+@media(max-width:768px){.section-title{font-size:2rem;}}
+/* grid — flex со старым fallback вместо gap */
+.div-grid{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:-1px;}
+.div-card{position:relative;padding:40px 32px;overflow:hidden;border:1px solid var(--border);-webkit-transition:border-color .3s;transition:border-color .3s;-webkit-box-flex:1;-webkit-flex:1 1 220px;flex:1 1 220px;min-height:320px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;margin:1px;}
+.div-card::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;opacity:0;-webkit-transition:opacity .3s;transition:opacity .3s;pointer-events:none;}
+[data-div="mine"]::before{background:linear-gradient(135deg,rgba(201,168,76,.09),transparent);}
+[data-div="construction"]::before{background:linear-gradient(135deg,rgba(74,127,165,.09),transparent);}
+[data-div="recycling"]::before{background:linear-gradient(135deg,rgba(90,158,111,.09),transparent);}
+[data-div="new"]::before{background:linear-gradient(135deg,rgba(122,122,122,.09),transparent);}
+.div-card:hover::before{opacity:1;}
+.div-card:hover{border-color:var(--border-h);}
+.div-dot{width:9px;height:9px;border-radius:50%;margin-bottom:22px;-webkit-flex-shrink:0;flex-shrink:0;}
+[data-div="mine"] .div-dot{background:var(--mine);}
+[data-div="construction"] .div-dot{background:var(--construction);}
+[data-div="recycling"] .div-dot{background:var(--recycling);}
+[data-div="new"] .div-dot{background:var(--new);}
+.div-num{position:absolute;top:28px;right:24px;font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:300;color:var(--border);line-height:1;pointer-events:none;}
+.div-name{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:600;color:var(--text);margin-bottom:20px;-webkit-transition:color .25s;transition:color .25s;line-height:1.1;}
+[data-div="mine"]:hover .div-name{color:var(--mine);}
+[data-div="construction"]:hover .div-name{color:var(--construction);}
+[data-div="recycling"]:hover .div-name{color:var(--recycling);}
+.div-services{list-style:none;-webkit-box-flex:1;-webkit-flex:1;flex:1;position:relative;z-index:2;}
+.div-services li{font-size:.68rem;letter-spacing:.07em;color:var(--text-2);text-transform:uppercase;padding:10px 0;border-bottom:1px solid var(--border);display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;cursor:pointer;font-weight:500;-webkit-transition:color .2s,padding-left .2s;transition:color .2s,padding-left .2s;-webkit-user-select:none;-moz-user-select:none;user-select:none;}
+.div-services li:hover,.div-services li:active{color:var(--gold);padding-left:8px;}
+
+/* SEP */
+.sep{height:1px;background:linear-gradient(to right,transparent,var(--border),transparent);}
+
+/* ACCORDION */
+.div-section{border-top:1px solid var(--border);}
+.div-section-header{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;padding:30px 52px;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-transition:background .2s;transition:background .2s;}
+.div-section-header:hover{background:var(--card-h);}
+.dsh-dot{width:9px;height:9px;border-radius:50%;-webkit-flex-shrink:0;flex-shrink:0;margin-right:16px;}
+.dsh-dot.mine{background:var(--mine);}
+.dsh-dot.construction{background:var(--construction);}
+.dsh-dot.recycling{background:var(--recycling);}
+.dsh-dot.new{background:var(--new);}
+.dsh-num{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:300;color:var(--text-3);letter-spacing:.1em;-webkit-flex-shrink:0;flex-shrink:0;margin-right:16px;}
+.dsh-name{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;letter-spacing:.04em;-webkit-box-flex:1;-webkit-flex:1;flex:1;line-height:1;}
+@media(max-width:768px){.dsh-name{font-size:1.5rem;}}
+.dsh-name.mine{color:var(--mine);}
+.dsh-name.construction{color:var(--construction);}
+.dsh-name.recycling{color:var(--recycling);}
+.dsh-name.new{color:var(--new);}
+.dsh-arrow{width:36px;height:36px;-webkit-flex-shrink:0;flex-shrink:0;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;border:1px solid var(--border);border-radius:50%;color:var(--text-3);-webkit-transition:border-color .25s,color .25s;transition:border-color .25s,color .25s;}
+.dsh-arrow svg{display:block;-webkit-transition:-webkit-transform .38s cubic-bezier(.4,0,.2,1);transition:transform .38s cubic-bezier(.4,0,.2,1);}
+.div-section-header:hover .dsh-arrow{border-color:var(--gold);color:var(--gold);}
+.div-section.open .dsh-arrow svg{-webkit-transform:rotate(180deg);transform:rotate(180deg);}
+.dsh-hint{padding:0 52px 22px;font-size:.6rem;letter-spacing:.18em;color:var(--text-3);text-transform:uppercase;line-height:2;}
+.div-section-body{overflow:hidden;-webkit-transition:height .45s cubic-bezier(.4,0,.2,1);transition:height .45s cubic-bezier(.4,0,.2,1);}
+
+/* SERVICE SECTION */
+.svc-section{padding:56px 52px 72px;border-top:1px solid var(--border);}
+.svc-inner{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:start;-webkit-align-items:flex-start;align-items:flex-start;}
+.svc-left{position:-webkit-sticky;position:sticky;top:88px;width:300px;min-width:300px;-webkit-flex-shrink:0;flex-shrink:0;margin-right:80px;}
+.svc-tag{font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;margin-bottom:8px;font-weight:600;}
+.svc-tag.mine{color:var(--mine);}
+.svc-tag.construction{color:var(--construction);}
+.svc-tag.recycling{color:var(--recycling);}
+.svc-tag.new{color:var(--new);}
+.svc-num{font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:300;color:var(--border);line-height:1;margin-bottom:10px;}
+.svc-title{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:400;color:var(--text);line-height:1.2;margin-bottom:14px;}
+@media(max-width:768px){.svc-title{font-size:1.7rem;}}
+.svc-line{width:36px;height:2px;margin-bottom:20px;}
+.svc-line.mine{background:var(--mine);}
+.svc-line.construction{background:var(--construction);}
+.svc-line.recycling{background:var(--recycling);}
+.svc-line.new{background:var(--new);}
+.svc-back{display:-webkit-inline-box;display:-webkit-inline-flex;display:inline-flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;margin-top:28px;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-3);cursor:pointer;-webkit-transition:color .25s;transition:color .25s;background:none;border:none;font-family:'Raleway',sans-serif;padding:0;font-weight:500;}
+.svc-back:hover,.svc-back:active{color:var(--gold);}
+.svc-body{-webkit-box-flex:1;-webkit-flex:1;flex:1;}
+.svc-desc{font-size:.88rem;line-height:1.9;color:var(--text-2);margin-bottom:28px;font-weight:400;}
+.svc-points{list-style:none;}
+.svc-points li{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:start;-webkit-align-items:flex-start;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--text-2);line-height:1.75;font-weight:400;}
+.svc-points li::before{content:"\2014";-webkit-flex-shrink:0;flex-shrink:0;color:var(--gold);margin-right:14px;margin-top:1px;}
+
+/* ABOUT */
+.about{padding:88px 52px;border-top:1px solid var(--border);}
+.about-inner{max-width:1200px;margin:0 auto;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:start;-webkit-align-items:flex-start;align-items:flex-start;-webkit-flex-wrap:wrap;flex-wrap:wrap;}
+.about-left{-webkit-box-flex:1;-webkit-flex:1 1 340px;flex:1 1 340px;margin-right:100px;}
+.about-line{width:44px;height:2px;background:var(--gold);margin-bottom:28px;}
+.about-text{font-size:.88rem;line-height:1.95;color:var(--text-2);margin-bottom:16px;font-weight:400;}
+.about-text strong{color:var(--gold);font-weight:600;}
+.about-right{-webkit-flex:0 0 280px;flex:0 0 280px;padding-top:64px;}
+.stat{padding:20px 0;border-bottom:1px solid var(--border);}
+.stat:first-child{border-top:1px solid var(--border);}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:300;color:var(--gold);line-height:1;margin-bottom:4px;}
+.stat-l{font-size:.62rem;letter-spacing:.2em;color:var(--text-3);text-transform:uppercase;font-weight:500;}
+
+/* CONTACT */
+.contact{padding:88px 52px;border-top:1px solid var(--border);}
+.contact-inner{max-width:1200px;margin:0 auto;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;}
+.contact-info{-webkit-box-flex:1;-webkit-flex:1 1 280px;flex:1 1 280px;padding-top:12px;margin-right:100px;}
+.contact-form-wrap{-webkit-box-flex:1;-webkit-flex:1 1 320px;flex:1 1 320px;}
+.contact-form{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;}
+.f-field{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;margin-bottom:20px;}
+.f-label{font-size:.6rem;letter-spacing:.24em;color:var(--text-3);text-transform:uppercase;font-weight:600;margin-bottom:7px;}
+.f-input,.f-textarea{background:transparent;border:none;border-bottom:1px solid var(--border);padding:11px 0;color:var(--text);font-family:'Raleway',sans-serif;font-size:.85rem;font-weight:400;outline:none;-webkit-transition:border-color .3s;transition:border-color .3s;-webkit-appearance:none;border-radius:0;}
+.f-input:focus,.f-textarea:focus{border-color:var(--gold);}
+.f-textarea{resize:none;height:90px;line-height:1.65;}
+.f-btn{background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Raleway',sans-serif;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;padding:16px 36px;cursor:pointer;font-weight:600;-webkit-transition:background .3s,color .3s;transition:background .3s,color .3s;-webkit-appearance:none;border-radius:0;-webkit-align-self:flex-start;align-self:flex-start;}
+.f-btn:hover,.f-btn:active{background:var(--gold);color:var(--bg);}
+.c-detail{margin-bottom:24px;}
+.c-label{font-size:.6rem;letter-spacing:.22em;color:var(--text-3);text-transform:uppercase;margin-bottom:6px;font-weight:600;}
+.c-val{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--text);}
+
+/* FOOTER */
+footer{padding:28px 52px;border-top:1px solid var(--border);display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-flex-wrap:wrap;flex-wrap:wrap;}
+.f-logo{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;}
+.f-divs{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;}
+.f-div{font-size:.6rem;letter-spacing:.13em;color:var(--text-3);text-transform:uppercase;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;font-weight:500;margin-right:18px;}
+.f-div::before{content:'';width:5px;height:5px;border-radius:50%;margin-right:6px;}
+.f-div.mine::before{background:var(--mine);}
+.f-div.construction::before{background:var(--construction);}
+.f-div.recycling::before{background:var(--recycling);}
+.f-copy{font-size:.58rem;letter-spacing:.1em;color:var(--text-3);}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .div-card{-webkit-flex:1 1 calc(50% - 2px);flex:1 1 calc(50% - 2px);}
+  .svc-inner{-webkit-flex-direction:column;flex-direction:column;}
+  .svc-left{position:static;width:auto;min-width:0;margin-right:0;margin-bottom:32px;}
+  .about-left{margin-right:0;margin-bottom:48px;}
+  .about-right{padding-top:0;}
+  .contact-info{margin-right:0;margin-bottom:48px;}
+}
+@media(max-width:768px){
+  nav{padding:0 20px;}
+  .nav-center,.nav-right{display:none;}
+  .burger{display:-webkit-box;display:-webkit-flex;display:flex;}
+  .mobile-nav{display:-webkit-box;display:-webkit-flex;display:flex;}
+  .overview,.about,.contact{padding:60px 20px;}
+  .div-section-header{padding:24px 20px;}
+  .dsh-hint{padding:0 20px 16px;}
+  .svc-section{padding:44px 20px 56px;}
+  footer{padding:24px 20px;}
+}
+@media(max-width:520px){
+  .div-card{-webkit-flex:1 1 100%;flex:1 1 100%;min-height:auto;}
+  footer{-webkit-flex-direction:column;flex-direction:column;-webkit-box-align:start;-webkit-align-items:flex-start;align-items:flex-start;}
+  .f-copy{margin-top:8px;}
+}
+</style>
+</head>
+<body>
+
+<div id="loading"><div class="loading-logo">MCR</div></div>
+
+<nav>
+  <a class="nav-logo" href="#top">MCR Group</a>
+  <ul class="nav-center">
+    <li><a href="#overview" data-i18n="nav.directions">Directions</a></li>
+    <li><a href="#about" data-i18n="nav.about">About Us</a></li>
+    <li><a href="#contact" data-i18n="nav.contacts">Contacts</a></li>
+  </ul>
+  <div class="nav-right">
+    <label class="theme-switch" title="Toggle theme">
+      <input type="checkbox" id="themeCheckbox">
+      <div class="theme-track"><div class="theme-thumb" id="themeThumb">&#9790;</div></div>
+    </label>
+    <div class="nav-lang">
+      <button class="lang-btn active" id="btn-en">ENG</button>
+      <span class="lang-sep">/</span>
+      <button class="lang-btn" id="btn-es">ESP</button>
+      <span class="lang-sep">/</span>
+      <button class="lang-btn" id="btn-pl">POL</button>
+    </div>
+  </div>
+  <button class="burger" id="burger"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="mobile-nav" id="mobileNav">
+  <a href="#overview" data-i18n="nav.directions">Directions</a>
+  <a href="#about" data-i18n="nav.about">About Us</a>
+  <a href="#contact" data-i18n="nav.contacts">Contacts</a>
+  <div class="mobile-lang">
+    <button id="mbtn-en" class="active">ENG</button>
+    <button id="mbtn-es">ESP</button>
+    <button id="mbtn-pl">POL</button>
+  </div>
+  <div class="mobile-theme">
+    <span class="mobile-theme-label" id="mobileThemeLabel">Dark Mode</span>
+    <label class="theme-switch">
+      <input type="checkbox" id="mobileThemeCheckbox">
+      <div class="theme-track"><div class="theme-thumb" id="mobileThemeThumb">&#9790;</div></div>
+    </label>
+  </div>
+</div>
+
+<div id="top"></div>
+<section class="hero">
+  <div class="hero-bg"></div><div class="hero-grid"></div>
+  <p class="hero-tagline" data-i18n="hero.tagline">Engineering &middot; Geology &middot; Innovation</p>
+  <h1 class="hero-title">MCR<br><span>Group</span></h1>
+  <p class="hero-sub" data-i18n="hero.subtitle">Mine &nbsp;&middot;&nbsp; Construction &nbsp;&middot;&nbsp; Recycling</p>
+  <div class="hero-scroll"><span data-i18n="ui.scroll">Scroll</span><div class="scroll-line"></div></div>
+</section>
+<section class="overview" id="overview">
+  <p class="section-label" data-i18n="ui.directions">Our Directions</p>
+  <h2 class="section-title" data-i18n="ui.pillars">Three Pillars,<br>One Vision</h2>
+  <div class="div-grid" id="divGrid"></div>
+</section>
+<div class="sep"></div>
+<div id="sectionsContainer"></div>
+<section class="about" id="about">
+  <div class="about-inner">
+    <div class="about-left">
+      <p class="section-label" data-i18n="ui.about">About Us</p>
+      <h2 class="section-title" id="about-title"></h2>
+      <div class="about-line"></div>
+      <p class="about-text" id="about-p1"></p>
+      <p class="about-text" id="about-p2"></p>
+      <p class="about-text" id="about-p3"></p>
+    </div>
+    <div class="about-right" id="about-stats"></div>
+  </div>
+</section>
+<section class="contact" id="contact">
+  <div class="contact-inner">
+    <div class="contact-info">
+      <p class="section-label" data-i18n="ui.contact">Get in Touch</p>
+      <h2 class="section-title" id="contact-title"></h2>
+      <div class="c-detail"><div class="c-label" data-i18n="ui.company">Company</div><div class="c-val" id="c-company"></div></div>
+      <div class="c-detail"><div class="c-label" data-i18n="ui.email">Email</div><div class="c-val" id="c-email"></div></div>
+      <div class="c-detail"><div class="c-label" data-i18n="ui.phone">Phone</div><div class="c-val" id="c-phone"></div></div>
+    </div>
+    <div class="contact-form-wrap">
+      <div class="contact-form">
+        <div class="f-field"><label class="f-label" data-i18n="ui.fname">Your Name</label><input class="f-input" type="text" autocomplete="name"></div>
+        <div class="f-field"><label class="f-label" data-i18n="ui.femail">Email</label><input class="f-input" type="email" autocomplete="email"></div>
+        <div class="f-field"><label class="f-label" data-i18n="ui.fdir">Direction</label><input class="f-input" type="text"></div>
+        <div class="f-field"><label class="f-label" data-i18n="ui.fmsg">Message</label><textarea class="f-textarea"></textarea></div>
+        <button class="f-btn" data-i18n="ui.fsend">Send Message</button>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="f-logo">MCR Group</div>
+  <div class="f-divs">
+    <span class="f-div mine">Mine</span>
+    <span class="f-div construction" data-i18n="div.construction">Construction</span>
+    <span class="f-div recycling" data-i18n="div.recycling">Recycling</span>
+  </div>
+  <div class="f-copy">&copy; 2026 MCR Group.</div>
+</footer>
+
+<script>
+/* ════════════════════════════════════════
+   ЧТО МЕНЯТЬ: текст между кавычками " "
+   ОТКРЫТЬ В БЛОКНОТЕ → Ctrl+F → найти текст
+   → изменить → Ctrl+S → F5 в браузере
+   ════════════════════════════════════════ */
+var CONTENT = {
+  hero: {
+    tagline: "Engineering · Geology · Innovation",
+    subtitle: "Mine · Construction · Recycling"
+  },
+  about: {
+    title_en: "Where Science<br>Meets Engineering",
+    title_es: "Donde la Ciencia<br>Encuentra la Ingeniería",
+    title_pl: "Gdzie Nauka<br>Spotyka Inżynierię",
+    p1_en: "<strong>MCR Group</strong> is an engineering-geological company focused on solving complex problems at the intersection of scientific and applied disciplines.",
+    p1_es: "<strong>MCR Group</strong> es una empresa de ingeniería geológica enfocada en resolver problemas complejos.",
+    p1_pl: "<strong>MCR Group</strong> to firma inżynieryjno-geologiczna rozwiązująca złożone problemy na styku nauk.",
+    p2_en: "Our core specialisation is the development and implementation of engineering-geological solutions combining geology, ecology, beneficiation and construction.",
+    p2_es: "Nuestra especialización es el desarrollo e implementación de soluciones de ingeniería geológica.",
+    p2_pl: "Naszą kluczową specjalizacją jest opracowywanie rozwiązań inżynieryjno-geologicznych.",
+    p3_en: "We work with both natural and anthropogenic minerals, including the processing and economic utilisation of man-made formations and mining industry waste.",
+    p3_es: "Trabajamos con minerales naturales y antrópicos, incluyendo el procesamiento de residuos mineros.",
+    p3_pl: "Pracujemy z minerałami naturalnymi i antropogenicznymi, w tym przetwarzaniem odpadów górniczych.",
+    stats: [
+      {n:"3",   l_en:"Core Divisions",      l_es:"Divisiones Principales", l_pl:"Główne Dywizje"},
+      {n:"17+", l_en:"Services & Solutions", l_es:"Servicios y Soluciones",  l_pl:"Usługi i Rozwiązania"},
+      {n:"3",   l_en:"Languages",            l_es:"Idiomas",                 l_pl:"Języki"},
+      {n:"∞",   l_en:"Potential Projects",   l_es:"Proyectos Potenciales",   l_pl:"Potencjalne Projekty"}
+    ]
+  },
+  contacts: {
+    company: "MCR Group",
+    email: "info@mcrgroup.com",
+    phone: "+XX XXX XXX XX XX"
+  },
+  divisions: [
+    {
+      id: "mine", cls: "mine", num: "01",
+      name_en: "Mine", name_es: "Minería", name_pl: "Górnictwo",
+      services: [
+        {
+          id:"geo", num:"01",
+          title_en:"Geological Services", title_es:"Servicios Geológicos", title_pl:"Usługi Geologiczne",
+          desc_en:"Comprehensive geological surveys designed to assess deposit potential and significantly reduce investment risks at every stage of exploration and development.",
+          desc_es:"Estudios geológicos integrales para evaluar el potencial de yacimientos y reducir los riesgos de inversión en cada etapa.",
+          desc_pl:"Kompleksowe badania geologiczne oceniające potencjał złóż i znacząco zmniejszające ryzyko inwestycyjne.",
+          points_en:["Geological mapping and structural analysis of the deposit area","Geophysical surveys including georadar investigations","Laboratory sample analysis and petrographic studies","Investment risk assessment and feasibility reporting","Geological documentation and regulatory compliance packages"],
+          points_es:["Cartografía geológica y análisis estructural","Estudios geofísicos incluidos georadar","Análisis de muestras y estudios petrográficos","Evaluación de riesgos e informes de viabilidad","Documentación geológica y cumplimiento normativo"],
+          points_pl:["Kartowanie geologiczne i analiza strukturalna","Badania geofizyczne w tym georadar","Analizy laboratoryjne i badania petrograficzne","Ocena ryzyka inwestycyjnego i raporty wykonalności","Dokumentacja geologiczna i zgodność regulacyjna"]
+        },
+        {
+          id:"exp", num:"02",
+          title_en:"Exploration Support", title_es:"Apoyo a la Exploración", title_pl:"Wsparcie Poszukiwań",
+          desc_en:"Full-cycle support for exploration works: from planning and field campaigns to laboratory analysis, data correlation, process optimisation, and complete geological documentation.",
+          desc_es:"Apoyo de ciclo completo: desde planificación y campañas de campo hasta documentación geológica completa.",
+          desc_pl:"Pełne wsparcie cyklu prac poszukiwawczych: od planowania do dokumentacji geologicznej.",
+          points_en:["Exploration programme design and planning","Field works management and supervision","Data correlation, interpretation, and 3D modelling","Process optimisation and operational efficiency analysis","Full geological documentation package preparation"],
+          points_es:["Diseño y planificación del programa de exploración","Gestión y supervisión de trabajos de campo","Correlación de datos e interpretación 3D","Optimización de procesos y eficiencia operativa","Preparación de documentación geológica completa"],
+          points_pl:["Projektowanie i planowanie programu poszukiwań","Zarządzanie i nadzór prac terenowych","Korelacja danych i modelowanie 3D","Optymalizacja procesów i analiza efektywności","Przygotowanie pełnej dokumentacji geologicznej"]
+        },
+        {
+          id:"res", num:"03",
+          title_en:"Resource Verification", title_es:"Verificación de Recursos", title_pl:"Weryfikacja Zasobów",
+          desc_en:"Independent assessment and confirmation of mineral reserves using internationally recognised standards, providing investors with credible, audit-ready resource estimates.",
+          desc_es:"Evaluación independiente y confirmación de reservas minerales con estándares internacionales.",
+          desc_pl:"Niezależna ocena i potwierdzenie zasobów mineralnych wg standardów międzynarodowych.",
+          points_en:["JORC, NI 43-101, and CRIRSCO-compliant reserve estimation","Independent audit of existing geological data","Competent Person reporting for capital markets","Cross-validation using alternative methodologies"],
+          points_es:["Estimación conforme a JORC, NI 43-101 y CRIRSCO","Auditoría independiente de datos geológicos","Informes de Persona Competente","Validación cruzada metodológica"],
+          points_pl:["Szacowanie zasobów wg JORC, NI 43-101 i CRIRSCO","Niezależny audyt danych geologicznych","Raporty Osoby Kompetentnej","Krzyżowa walidacja metodologiami"]
+        },
+        {
+          id:"adv", num:"04",
+          title_en:"Mining Entry Advisory", title_es:"Asesoría de Entrada Minera", title_pl:"Doradztwo Wejścia Górniczego",
+          desc_en:"Strategic consulting for the launch of new mining projects — from regulatory navigation and permitting to operational setup and team formation.",
+          desc_es:"Consultoría estratégica para el lanzamiento de nuevos proyectos mineros.",
+          desc_pl:"Doradztwo strategiczne przy uruchamianiu nowych projektów górniczych.",
+          points_en:["Regulatory framework analysis and permitting strategy","Business model and project structure development","Operational readiness assessment and roadmap","Partner and investor introduction support"],
+          points_es:["Análisis regulatorio y estrategia de permisos","Modelo de negocio y estructura de proyecto","Evaluación de preparación operativa","Apoyo en introducción de socios e inversores"],
+          points_pl:["Analiza ram regulacyjnych i strategia pozwoleń","Model biznesowy i struktura projektu","Ocena gotowości operacyjnej","Wsparcie w pozyskaniu partnerów"]
+        },
+        {
+          id:"cbp", num:"05",
+          title_en:"Cross-Border Projects", title_es:"Proyectos Transfronterizos", title_pl:"Projekty Transgraniczne",
+          desc_en:"End-to-end management of complex international mining projects combining exploration, extraction, and operation at the intersection of technology and scientific methods.",
+          desc_es:"Gestión integral de proyectos mineros internacionales complejos.",
+          desc_pl:"Kompleksowe zarządzanie złożonymi międzynarodowymi projektami górniczymi.",
+          points_en:["Multi-jurisdiction project coordination","Cross-border regulatory compliance","International technical team mobilisation","Technology transfer and localisation"],
+          points_es:["Coordinación de proyectos multijurisdiccionales","Cumplimiento normativo transfronterizo","Movilización de equipos técnicos internacionales","Transferencia de tecnología"],
+          points_pl:["Koordynacja projektów wielojurysdykcyjnych","Transgraniczne przestrzeganie przepisów","Mobilizacja międzynarodowych zespołów","Transfer technologii"]
+        },
+        {
+          id:"ant", num:"06",
+          title_en:"Anthropogenic Mining", title_es:"Minería Antrópica", title_pl:"Górnictwo Antropogeniczne",
+          desc_en:"Extraction of valuable resources from industrial waste streams and tailings storage facilities — turning environmental liabilities into economic assets.",
+          desc_es:"Extracción de recursos valiosos de residuos industriales y depósitos de estériles.",
+          desc_pl:"Wydobycie wartościowych zasobów ze strumieni odpadów i składowisk poflotacyjnych.",
+          points_en:["Tailings characterisation and resource evaluation","Secondary resource extraction technology selection","Environmental impact mitigation during re-processing","Economic model for waste-to-resource conversion"],
+          points_es:["Caracterización de estériles y evaluación de recursos","Selección de tecnología de extracción secundaria","Mitigación del impacto ambiental","Modelo económico de conversión"],
+          points_pl:["Charakterystyka odpadów i ocena zasobów","Dobór technologii wydobycia wtórnego","Ograniczanie wpływu środowiskowego","Model ekonomiczny konwersji"]
+        },
+        {
+          id:"phy", num:"07",
+          title_en:"Phyto Mining", title_es:"Fitominería", title_pl:"Fitogórnictwo",
+          desc_en:"Innovative mineral extraction using hyperaccumulator plants — a low-impact, sustainable alternative for recovering metals from low-grade or contaminated soils.",
+          desc_es:"Extracción innovadora de minerales usando plantas hiperacumuladoras.",
+          desc_pl:"Innowacyjne wydobycie minerałów przy użyciu roślin hiperakumulujących.",
+          points_en:["Site suitability assessment for phytomining","Hyperaccumulator species selection and cultivation","Biomass harvesting and metal recovery processing","Soil remediation combined with resource recovery"],
+          points_es:["Evaluación del sitio para fitominería","Selección y cultivo de especies hiperacumuladoras","Cosecha de biomasa y procesamiento","Remediación del suelo"],
+          points_pl:["Ocena przydatności terenu","Dobór i uprawa gatunków hiperakumulujących","Zbiór biomasy i przetwarzanie","Rekultywacja gleby"]
+        }
+      ]
+    },
+    {
+      id: "construction", cls: "construction", num: "02",
+      name_en: "Construction", name_es: "Construcción", name_pl: "Budownictwo",
+      services: [
+        {
+          id:"ind", num:"01",
+          title_en:"Industrial Installations", title_es:"Instalaciones Industriales", title_pl:"Instalacje Przemysłowe",
+          desc_en:"Design and full turnkey construction of industrial facilities — from initial concept to commissioning, tailored to the specific demands of mining and heavy industry.",
+          desc_es:"Diseño y construcción integral llave en mano de instalaciones industriales.",
+          desc_pl:"Projektowanie i budowa obiektów przemysłowych pod klucz.",
+          points_en:["Concept design and feasibility studies","Detailed engineering and technical documentation","Construction management and quality control","Commissioning and handover support"],
+          points_es:["Diseño conceptual y estudios de viabilidad","Ingeniería detallada y documentación técnica","Gestión de construcción y control de calidad","Soporte de puesta en marcha"],
+          points_pl:["Projekt koncepcyjny i studia wykonalności","Inżynieria szczegółowa i dokumentacja techniczna","Zarządzanie budową i kontrola jakości","Wsparcie przy uruchomieniu"]
+        },
+        {
+          id:"eng", num:"02",
+          title_en:"Engineering Support", title_es:"Soporte de Ingeniería", title_pl:"Wsparcie Inżynieryjne",
+          desc_en:"Continuous engineering support throughout all stages of project implementation — ensuring technical integrity, schedule adherence, and adaptive problem-solving.",
+          desc_es:"Soporte de ingeniería continuo en todas las etapas de implementación del proyecto.",
+          desc_pl:"Ciągłe wsparcie inżynieryjne na wszystkich etapach realizacji projektu.",
+          points_en:["On-site and remote engineering supervision","Technical risk identification and mitigation","Change management and scope control","Progress reporting and stakeholder communication"],
+          points_es:["Supervisión de ingeniería in situ y remota","Identificación y mitigación de riesgos técnicos","Gestión de cambios","Informes de progreso"],
+          points_pl:["Nadzór inżynieryjny na miejscu i zdalny","Identyfikacja i ograniczanie ryzyka","Zarządzanie zmianami","Raporty postępu"]
+        },
+        {
+          id:"tec", num:"03",
+          title_en:"Technology Partnerships", title_es:"Asociaciones Tecnológicas", title_pl:"Partnerstwa Technologiczne",
+          desc_en:"Strategic collaboration with leading technology providers to integrate advanced solutions into industrial construction and operations.",
+          desc_es:"Colaboración estratégica con proveedores de tecnología para integrar soluciones avanzadas.",
+          desc_pl:"Strategiczna współpraca z dostawcami technologii w celu integracji zaawansowanych rozwiązań.",
+          points_en:["Technology partner identification and vetting","Joint venture and licensing arrangement structuring","Technology integration and adaptation","Training and knowledge transfer programmes"],
+          points_es:["Identificación y evaluación de socios tecnológicos","Estructuración de joint ventures","Integración y adaptación de tecnología","Programas de formación"],
+          points_pl:["Identyfikacja partnerów technologicznych","Strukturyzacja joint venture","Integracja i adaptacja technologii","Programy szkoleniowe"]
+        },
+        {
+          id:"eqp", num:"04",
+          title_en:"Equipment Catalogue", title_es:"Catálogo de Equipos", title_pl:"Katalog Sprzętu",
+          desc_en:"Selection and procurement of industrial equipment matched precisely to project requirements — from heavy machinery to specialised processing units.",
+          desc_es:"Selección y adquisición de equipos industriales adaptados al proyecto.",
+          desc_pl:"Dobór i zakup sprzętu przemysłowego dopasowanego do projektu.",
+          points_en:["Needs analysis and technical specification development","Supplier sourcing and comparative evaluation","Procurement, logistics, and customs support","Installation supervision and acceptance testing"],
+          points_es:["Análisis de necesidades y especificaciones técnicas","Búsqueda de proveedores y evaluación","Adquisición, logística y aduanas","Supervisión de instalación"],
+          points_pl:["Analiza potrzeb i specyfikacje techniczne","Pozyskiwanie dostawców i ocena","Zaopatrzenie, logistyka i cło","Nadzór nad instalacją"]
+        }
+      ]
+    },
+    {
+      id: "recycling", cls: "recycling", num: "03",
+      name_en: "Recycling", name_es: "Reciclaje", name_pl: "Recykling",
+      services: [
+        {
+          id:"wst", num:"01",
+          title_en:"Waste Processing", title_es:"Procesamiento de Residuos", title_pl:"Przetwarzanie Odpadów",
+          desc_en:"Modern waste processing solutions engineered for maximum efficiency — transforming industrial and municipal waste streams into valuable secondary resources.",
+          desc_es:"Soluciones modernas de procesamiento de residuos para máxima eficiencia.",
+          desc_pl:"Nowoczesne rozwiązania przetwarzania odpadów o maksymalnej wydajności.",
+          points_en:["Waste stream characterisation and sorting strategy","Processing technology selection and design","Yield optimisation and quality control systems","Regulatory compliance and environmental monitoring"],
+          points_es:["Caracterización de residuos y estrategia de clasificación","Selección y diseño de tecnología","Optimización de rendimiento","Cumplimiento normativo y monitoreo"],
+          points_pl:["Charakterystyka strumieni i strategia sortowania","Dobór i projektowanie technologii","Optymalizacja wydajności","Przestrzeganie przepisów i monitoring"]
+        },
+        {
+          id:"req", num:"02",
+          title_en:"Recycling Equipment", title_es:"Equipos de Reciclaje", title_pl:"Sprzęt do Recyklingu",
+          desc_en:"Comprehensive supply of specialised equipment for processing diverse material types — from sorting lines to shredders, pelletisers, and briquetting systems.",
+          desc_es:"Suministro integral de equipos especializados para distintos materiales.",
+          desc_pl:"Kompleksowe dostawy sprzętu specjalistycznego do przetwarzania różnych materiałów.",
+          points_en:["Equipment specification for target waste fractions","Complete processing line design and supply","Installation, commissioning, and operator training","Maintenance contracts and spare parts supply"],
+          points_es:["Especificación de equipos para fracciones objetivo","Diseño y suministro de líneas completas","Instalación, puesta en marcha y formación","Contratos de mantenimiento"],
+          points_pl:["Specyfikacja sprzętu dla frakcji odpadów","Projektowanie i dostawa linii przetwarzania","Instalacja, uruchomienie i szkolenie","Umowy serwisowe"]
+        },
+        {
+          id:"irt", num:"03",
+          title_en:"Innovative Recycling Technologies", title_es:"Tecnologías Innovadoras de Reciclaje", title_pl:"Innowacyjne Technologie Recyklingu",
+          desc_en:"Advanced technologies that increase profitability and environmental performance of recycling operations — including coal briquette and pellet production.",
+          desc_es:"Tecnologías avanzadas que aumentan rentabilidad y desempeño ambiental del reciclaje.",
+          desc_pl:"Zaawansowane technologie zwiększające rentowność i efektywność środowiskową recyklingu.",
+          points_en:["Coal briquette and pellet production technology","Energy-efficient beneficiation processes","Technology deployment at client facilities","Performance benchmarking and continuous improvement"],
+          points_es:["Tecnología de briquetas y pellets de carbón","Procesos energéticamente eficientes","Despliegue en instalaciones de clientes","Benchmarking y mejora continua"],
+          points_pl:["Technologia brykietów i pelletów węglowych","Energooszczędne procesy wzbogacania","Wdrożenie u klientów","Benchmarking i doskonalenie"]
+        },
+        {
+          id:"sus", num:"04",
+          title_en:"Sustainability Projects", title_es:"Proyectos de Sostenibilidad", title_pl:"Projekty Zrównoważone",
+          desc_en:"Projects aimed at sustainable development and reducing the harmful environmental footprint of industrial activity — from ESG strategy to zero-waste implementation.",
+          desc_es:"Proyectos orientados al desarrollo sostenible y reducción de huella ambiental.",
+          desc_pl:"Projekty na rzecz zrównoważonego rozwoju i redukcji śladu środowiskowego.",
+          points_en:["Environmental impact assessment and ESG reporting","Zero-waste programme design","Carbon footprint reduction strategies","Stakeholder engagement and sustainability communication"],
+          points_es:["Evaluación de impacto ambiental y ESG","Diseño de programas de residuos cero","Estrategias de reducción de carbono","Participación de partes interesadas"],
+          points_pl:["Ocena wpływu środowiskowego i ESG","Programy zeroodpadowe","Strategie redukcji śladu węglowego","Zaangażowanie interesariuszy"]
+        },
+        {
+          id:"bio", num:"05",
+          title_en:"Biofuel Solutions", title_es:"Soluciones de Biocombustible", title_pl:"Rozwiązania Biopaliwowe",
+          desc_en:"Production of alternative fuels from organic and industrial waste — converting waste biomass into commercially viable energy carriers.",
+          desc_es:"Producción de combustibles alternativos a partir de residuos orgánicos e industriales.",
+          desc_pl:"Produkcja alternatywnych paliw z odpadów organicznych i przemysłowych.",
+          points_en:["Feedstock assessment and fuel yield analysis","Pellet and briquette fuel production systems","Biogas and syngas conversion feasibility","Off-take market identification and supply chain setup"],
+          points_es:["Evaluación de materias primas y rendimiento","Sistemas de producción de pellets y briquetas","Viabilidad de biogás y gas de síntesis","Identificación de mercado"],
+          points_pl:["Ocena surowców i analiza wydajności","Systemy produkcji pelletów i brykietów","Wykonalność konwersji biogazu","Identyfikacja rynku zbytu"]
+        },
+        {
+          id:"lan", num:"06",
+          title_en:"Land Reclamation", title_es:"Recuperación de Tierras", title_pl:"Rekultywacja Terenów",
+          desc_en:"Ecological restoration and rehabilitation of territories impacted by industrial activity — bringing degraded land back to productive or natural use.",
+          desc_es:"Restauración ecológica y rehabilitación de territorios industriales.",
+          desc_pl:"Ekologiczna odbudowa i rehabilitacja terenów przemysłowych.",
+          points_en:["Site contamination assessment and remediation planning","Soil restoration and revegetation programmes","Post-mining landscape rehabilitation","Long-term monitoring and ecological compliance"],
+          points_es:["Evaluación de contaminación y remediación","Programas de restauración del suelo","Rehabilitación del paisaje post-minería","Monitoreo a largo plazo"],
+          points_pl:["Ocena skażenia i remediacja","Przywracanie gleby i zalesianie","Rehabilitacja krajobrazu pogórniczego","Długoterminowy monitoring"]
+        }
+      ]
+    },
+    {
+      id: "new", cls: "new", num: "04",
+      name_en: "New Projects", name_es: "Nuevos Proyectos", name_pl: "Nowe Projekty",
+      services: [
+        {
+          id:"nwp", num:"01",
+          title_en:"Coming Soon", title_es:"Próximamente", title_pl:"Wkrótce",
+          desc_en:"This section is under active development. We are preparing innovative project directions that extend beyond our current divisions. Contact us to discuss potential collaboration.",
+          desc_es:"Esta sección está en desarrollo. Contáctenos para explorar posibles colaboraciones.",
+          desc_pl:"Ta sekcja jest w trakcie aktywnego rozwoju. Skontaktuj się z nami.",
+          points_en:[], points_es:[], points_pl:[]
+        }
+      ]
+    }
+  ]
+};
+
+
+var UI = {
+  en: {"nav.directions":"Directions","nav.about":"About Us","nav.contacts":"Contacts","ui.scroll":"Scroll","ui.directions":"Our Directions","ui.pillars":"Three Pillars,<br>One Vision","ui.about":"About Us","ui.contact":"Get in Touch","ui.company":"Company","ui.email":"Email","ui.phone":"Phone","ui.fname":"Your Name","ui.femail":"Email Address","ui.fdir":"Direction of Interest","ui.fmsg":"Message","ui.fsend":"Send Message","ui.back":"Back to Directions","div.construction":"Construction","div.recycling":"Recycling"},
+  es: {"nav.directions":"Direcciones","nav.about":"Sobre Nosotros","nav.contacts":"Contactos","ui.scroll":"Desplazar","ui.directions":"Nuestras Direcciones","ui.pillars":"Tres Pilares,<br>Una Visión","ui.about":"Sobre Nosotros","ui.contact":"Contáctenos","ui.company":"Empresa","ui.email":"Correo","ui.phone":"Teléfono","ui.fname":"Su Nombre","ui.femail":"Correo Electrónico","ui.fdir":"Dirección de Interés","ui.fmsg":"Mensaje","ui.fsend":"Enviar Mensaje","ui.back":"Volver a Direcciones","div.construction":"Construcción","div.recycling":"Reciclaje"},
+  pl: {"nav.directions":"Kierunki","nav.about":"O Nas","nav.contacts":"Kontakt","ui.scroll":"Przewiń","ui.directions":"Nasze Kierunki","ui.pillars":"Trzy Filary,<br>Jedna Wizja","ui.about":"O Nas","ui.contact":"Skontaktuj Się","ui.company":"Firma","ui.email":"E-mail","ui.phone":"Telefon","ui.fname":"Twoje Imię","ui.femail":"Adres E-mail","ui.fdir":"Kierunek Zainteresowania","ui.fmsg":"Wiadomość","ui.fsend":"Wyślij Wiadomość","ui.back":"Powrót do Kierunków","div.construction":"Budownictwo","div.recycling":"Recykling"}
+};
+
+
+/* Smooth scroll polyfill — works on all iOS */
+function smoothScrollTo(targetY) {
+  var startY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+  var diff = targetY - startY;
+  if (Math.abs(diff) < 2) return;
+  var duration = 600;
+  var startTime = null;
+  function easeInOut(t) {
+    return t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+  }
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    var elapsed = timestamp - startTime;
+    var progress = Math.min(elapsed / duration, 1);
+    window.scrollTo(0, startY + diff * easeInOut(progress));
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  }
+  if (window.requestAnimationFrame) {
+    window.requestAnimationFrame(step);
+  } else {
+    window.scrollTo(0, targetY);
+  }
+}
+
+var lang = 'en';
+var accOpen = {};
+var isLight = false;
+
+/* ── THEME ── */
+function setTheme(light) {
+  isLight = light;
+  document.documentElement.className = light ? 'light' : '';
+  var icon = light ? '\u2600' : '\u263e';
+  var t1 = document.getElementById('themeThumb');
+  var t2 = document.getElementById('mobileThemeThumb');
+  var lbl = document.getElementById('mobileThemeLabel');
+  if (t1) t1.innerHTML = icon;
+  if (t2) t2.innerHTML = icon;
+  if (lbl) lbl.textContent = light ? 'Light Mode' : 'Dark Mode';
+}
+
+/* ── SCROLL — использует polyfill вместо behavior:'smooth' ── */
+function goTo(el) {
+  if (!el) return;
+  var top = el.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - 76;
+  smoothScrollTo(top < 0 ? 0 : top);
+}
+function scrollToOverview() { goTo(document.getElementById('overview')); }
+
+/* ── CLICK SERVICE FROM GRID ── */
+function clickService(svcId, divId) {
+  closeMenu();
+  if (!accOpen[divId]) {
+    openAcc(divId);
+    setTimeout(function() { goTo(document.getElementById('svc-' + svcId)); }, 520);
+  } else {
+    goTo(document.getElementById('svc-' + svcId));
+  }
+}
+
+/* ── ACCORDION ── */
+function openAcc(divId) {
+  accOpen[divId] = true;
+  var sec  = document.getElementById('divsec-' + divId);
+  var body = document.getElementById('accbody-' + divId);
+  var hint = document.getElementById('acchint-' + divId);
+  if (!sec || !body) return;
+  sec.className = 'div-section open';
+  body.style.height = body.scrollHeight + 'px';
+  var timer = setTimeout(function() { if (accOpen[divId]) { body.style.height = 'auto'; } }, 500);
+  body.addEventListener('transitionend', function onEnd() {
+    clearTimeout(timer);
+    if (accOpen[divId]) { body.style.height = 'auto'; }
+    body.removeEventListener('transitionend', onEnd);
+  });
+  if (hint) { hint.style.display = 'none'; }
+}
+function closeAcc(divId) {
+  accOpen[divId] = false;
+  var sec  = document.getElementById('divsec-' + divId);
+  var body = document.getElementById('accbody-' + divId);
+  var hint = document.getElementById('acchint-' + divId);
+  if (!sec || !body) return;
+  body.style.height = body.scrollHeight + 'px';
+  setTimeout(function() { body.style.height = '0px'; }, 20);
+  sec.className = 'div-section';
+  if (hint) { hint.style.display = ''; }
+}
+function toggleAcc(divId) {
+  if (accOpen[divId]) { closeAcc(divId); } else { openAcc(divId); }
+}
+
+/* ── RENDER GRID — createElement, без innerHTML ── */
+function renderGrid() {
+  var grid = document.getElementById('divGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  var i, j, div, s, card, numEl, dotEl, nameEl, ul, li;
+  for (i = 0; i < CONTENT.divisions.length; i++) {
+    div = CONTENT.divisions[i];
+    card = document.createElement('div');
+    card.className = 'div-card';
+    card.setAttribute('data-div', div.cls);
+    numEl = document.createElement('div'); numEl.className = 'div-num'; numEl.textContent = div.num;
+    dotEl = document.createElement('div'); dotEl.className = 'div-dot';
+    nameEl = document.createElement('h3'); nameEl.className = 'div-name'; nameEl.textContent = div['name_' + lang];
+    ul = document.createElement('ul'); ul.className = 'div-services';
+    for (j = 0; j < div.services.length; j++) {
+      s = div.services[j];
+      li = document.createElement('li');
+      li.textContent = s['title_' + lang];
+      (function(sId, dId) {
+        li.addEventListener('click', function(e) { e.stopPropagation(); clickService(sId, dId); });
+      })(s.id, div.id);
+      ul.appendChild(li);
+    }
+    card.appendChild(numEl); card.appendChild(dotEl); card.appendChild(nameEl); card.appendChild(ul);
+    grid.appendChild(card);
+  }
+}
+
+/* ── RENDER SECTIONS — createElement, SVG через createElementNS ── */
+function makeSvgArrow() {
+  /* SVG через createElementNS — единственный надёжный способ на iOS */
+  var ns = 'http://www.w3.org/2000/svg';
+  var svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('width', '13'); svg.setAttribute('height', '8');
+  svg.setAttribute('viewBox', '0 0 13 8'); svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor'); svg.setAttribute('stroke-width', '1.6');
+  svg.setAttribute('stroke-linecap', 'round'); svg.setAttribute('stroke-linejoin', 'round');
+  var pl = document.createElementNS(ns, 'polyline');
+  pl.setAttribute('points', '1,1 6.5,7 12,1');
+  svg.appendChild(pl);
+  return svg;
+}
+
+function renderSections() {
+  var container = document.getElementById('sectionsContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  var i, j, k, div, s, pts;
+  var wrap, hdr, dot, num, name, arrowWrap, hint, body, sec, inner, left, svcNum, tag, title, line, back, bDiv, desc, ul, li, sep;
+  for (i = 0; i < CONTENT.divisions.length; i++) {
+    div = CONTENT.divisions[i];
+    wrap = document.createElement('div');
+    wrap.className = accOpen[div.id] ? 'div-section open' : 'div-section';
+    wrap.id = 'divsec-' + div.id;
+    hdr = document.createElement('div'); hdr.className = 'div-section-header';
+    (function(id) { hdr.addEventListener('click', function() { toggleAcc(id); }); })(div.id);
+    dot = document.createElement('div'); dot.className = 'dsh-dot ' + div.cls;
+    num = document.createElement('span'); num.className = 'dsh-num'; num.textContent = div.num;
+    name = document.createElement('span'); name.className = 'dsh-name ' + div.cls; name.textContent = div['name_' + lang];
+    arrowWrap = document.createElement('div'); arrowWrap.className = 'dsh-arrow';
+    arrowWrap.appendChild(makeSvgArrow());
+    hdr.appendChild(dot); hdr.appendChild(num); hdr.appendChild(name); hdr.appendChild(arrowWrap);
+    wrap.appendChild(hdr);
+    hint = document.createElement('div'); hint.className = 'dsh-hint'; hint.id = 'acchint-' + div.id;
+    var hintParts = [];
+    for (j = 0; j < div.services.length; j++) { hintParts.push(div.services[j]['title_' + lang]); }
+    hint.textContent = hintParts.join(' · ');
+    if (accOpen[div.id]) { hint.style.display = 'none'; }
+    wrap.appendChild(hint);
+    body = document.createElement('div'); body.className = 'div-section-body'; body.id = 'accbody-' + div.id;
+    body.style.height = accOpen[div.id] ? 'auto' : '0px';
+    body.style.overflow = 'hidden';
+    body.style.webkitTransition = 'height .45s cubic-bezier(.4,0,.2,1)';
+    body.style.transition = 'height .45s cubic-bezier(.4,0,.2,1)';
+    for (j = 0; j < div.services.length; j++) {
+      s = div.services[j]; pts = s['points_' + lang];
+      sec = document.createElement('section'); sec.className = 'svc-section'; sec.id = 'svc-' + s.id;
+      inner = document.createElement('div'); inner.className = 'svc-inner';
+      left = document.createElement('div'); left.className = 'svc-left';
+      svcNum = document.createElement('div'); svcNum.className = 'svc-num'; svcNum.textContent = s.num;
+      tag = document.createElement('p'); tag.className = 'svc-tag ' + div.cls; tag.textContent = div['name_' + lang];
+      title = document.createElement('h2'); title.className = 'svc-title'; title.textContent = s['title_' + lang];
+      line = document.createElement('div'); line.className = 'svc-line ' + div.cls;
+      back = document.createElement('button'); back.className = 'svc-back';
+      back.textContent = '↑ ' + (UI[lang]['ui.back'] || 'Back');
+      back.addEventListener('click', scrollToOverview);
+      left.appendChild(svcNum); left.appendChild(tag); left.appendChild(title); left.appendChild(line); left.appendChild(back);
+      bDiv = document.createElement('div'); bDiv.className = 'svc-body';
+      desc = document.createElement('p'); desc.className = 'svc-desc'; desc.textContent = s['desc_' + lang];
+      bDiv.appendChild(desc);
+      if (pts && pts.length > 0) {
+        ul = document.createElement('ul'); ul.className = 'svc-points';
+        for (k = 0; k < pts.length; k++) { li = document.createElement('li'); li.textContent = pts[k]; ul.appendChild(li); }
+        bDiv.appendChild(ul);
+      }
+      inner.appendChild(left); inner.appendChild(bDiv); sec.appendChild(inner); body.appendChild(sec);
+    }
+    wrap.appendChild(body); container.appendChild(wrap);
+    sep = document.createElement('div'); sep.className = 'sep'; container.appendChild(sep);
+  }
+}
+
+/* ── RENDER ABOUT ── */
+function renderAbout() {
+  var a = CONTENT.about, el;
+  el = document.getElementById('about-title'); if(el) el.innerHTML = a['title_' + lang];
+  el = document.getElementById('about-p1');    if(el) el.innerHTML = a['p1_' + lang];
+  el = document.getElementById('about-p2');    if(el) el.innerHTML = a['p2_' + lang];
+  el = document.getElementById('about-p3');    if(el) el.innerHTML = a['p3_' + lang];
+  var statsEl = document.getElementById('about-stats');
+  if (!statsEl) return;
+  statsEl.innerHTML = '';
+  for (var i = 0; i < a.stats.length; i++) {
+    var d = document.createElement('div'); d.className = 'stat';
+    var n = document.createElement('div'); n.className = 'stat-n'; n.textContent = a.stats[i].n;
+    var l = document.createElement('div'); l.className = 'stat-l'; l.textContent = a.stats[i]['l_' + lang];
+    d.appendChild(n); d.appendChild(l); statsEl.appendChild(d);
+  }
+}
+
+/* ── RENDER CONTACTS ── */
+function renderContacts() {
+  var c = CONTENT.contacts;
+  var e1=document.getElementById('c-company'), e2=document.getElementById('c-email'),
+      e3=document.getElementById('c-phone'),   e4=document.getElementById('contact-title');
+  if(e1) e1.textContent = c.company;
+  if(e2) e2.textContent = c.email;
+  if(e3) e3.textContent = c.phone;
+  var titles = { en:"Let's Discuss<br>Your Project", es:"Hablemos de<br>Su Proyecto", pl:"Omówmy<br>Twój Projekt" };
+  if(e4) e4.innerHTML = titles[lang];
+}
+
+/* ── APPLY UI ── */
+function applyUI() {
+  var t = UI[lang], els = document.querySelectorAll('[data-i18n]'), i, k;
+  for (i = 0; i < els.length; i++) {
+    k = els[i].getAttribute('data-i18n');
+    if (t[k] !== undefined) els[i].innerHTML = t[k];
+  }
+}
+
+/* ── SET LANGUAGE ── */
+function setLang(l) {
+  lang = l;
+  var ids = ['en','es','pl'], i;
+  for (i = 0; i < ids.length; i++) {
+    var db = document.getElementById('btn-' + ids[i]);
+    var mb = document.getElementById('mbtn-' + ids[i]);
+    if (db) { db.className = (ids[i] === l) ? 'lang-btn active' : 'lang-btn'; }
+    if (mb) { mb.className = (ids[i] === l) ? 'active' : ''; }
+  }
+  renderGrid(); renderSections(); renderAbout(); renderContacts(); applyUI();
+}
+
+/* ── MOBILE MENU ── */
+function toggleMenu() {
+  var b = document.getElementById('burger'), n = document.getElementById('mobileNav');
+  if (!b || !n) return;
+  var open = n.className.indexOf('open') >= 0;
+  if (open) { n.className='mobile-nav'; b.className='burger'; document.body.style.overflow=''; }
+  else { n.className='mobile-nav open'; b.className='burger open'; document.body.style.overflow='hidden'; }
+}
+function closeMenu() {
+  var b=document.getElementById('burger'), n=document.getElementById('mobileNav');
+  if(b) b.className='burger'; if(n) n.className='mobile-nav'; document.body.style.overflow='';
+}
+
+/* ── HIDE LOADING ── надёжный способ для iOS ── */
+function hideLoading() {
+  var loading = document.getElementById('loading');
+  if (!loading) return;
+  /* Fade + принудительное скрытие */
+  loading.className = 'fade';
+  /* iOS: через 200мс точно скрываем */
+  setTimeout(function() {
+    if (loading) {
+      loading.style.opacity = '0';
+      loading.style.pointerEvents = 'none';
+      loading.style.display = 'none';
+    }
+  }, 200);
+}
+
+/* ── INIT ── */
+function safeInit() {
+  var i, ids;
+  /* Инициализация аккордеонов */
+  for (i = 0; i < CONTENT.divisions.length; i++) { accOpen[CONTENT.divisions[i].id] = true; }
+
+  /* Рендер */
+  renderGrid(); renderSections(); renderAbout(); renderContacts(); applyUI();
+
+  /* Theme */
+  var desktopCb = document.getElementById('themeCheckbox');
+  var mobileCb  = document.getElementById('mobileThemeCheckbox');
+  if (desktopCb) {
+    desktopCb.addEventListener('change', function() {
+      setTheme(this.checked);
+      if (mobileCb) { mobileCb.checked = this.checked; }
+    });
+  }
+  if (mobileCb) {
+    mobileCb.addEventListener('change', function() {
+      setTheme(this.checked);
+      if (desktopCb) { desktopCb.checked = this.checked; }
+    });
+  }
+
+  /* Lang */
+  ids = ['en','es','pl'];
+  for (i = 0; i < ids.length; i++) {
+    (function(ll) {
+      var db = document.getElementById('btn-' + ll);
+      var mb = document.getElementById('mbtn-' + ll);
+      if (db) db.addEventListener('click', function() { setLang(ll); });
+      if (mb) mb.addEventListener('click', function() { setLang(ll); });
+    })(ids[i]);
+  }
+
+  /* Burger */
+  var burger = document.getElementById('burger');
+  if (burger) burger.addEventListener('click', toggleMenu);
+
+  /* Mobile links */
+  var mlinks = document.querySelectorAll('.mobile-nav a');
+  for (i = 0; i < mlinks.length; i++) { mlinks[i].addEventListener('click', closeMenu); }
+
+  /* Nav smooth scroll */
+  var navLinks = document.querySelectorAll('.nav-center a');
+  for (i = 0; i < navLinks.length; i++) {
+    (function(a) {
+      a.addEventListener('click', function(e) {
+        var href = a.getAttribute('href');
+        if (href && href.charAt(0) === '#') {
+          e.preventDefault();
+          var target = document.getElementById(href.substring(1));
+          if (target) goTo(target);
+        }
+      });
+    })(navLinks[i]);
+  }
+
+  /* Скрыть loading */
+  hideLoading();
+}
+
+window.addEventListener('resize', function() { if (window.innerWidth > 768) closeMenu(); });
+
+/* ── SAFE BOOT — работает на iOS file:// ── */
+function runInit() {
+  try {
+    safeInit();
+  } catch(e) {
+    /* Показать ошибку прямо на экране для отладки */
+    var loading = document.getElementById('loading');
+    if (loading) {
+      loading.style.background = '#0a0a0a';
+      loading.style.display = 'flex';
+      loading.style.opacity = '1';
+      loading.style.flexDirection = 'column';
+      loading.style.padding = '30px';
+      loading.innerHTML = '<div style="color:#c9a84c;font-family:monospace;font-size:14px;word-break:break-all;text-align:left;max-width:90vw;">ERROR: ' + e.message + '<br><br>' + (e.stack||'') + '</div>';
+    }
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', runInit);
+} else {
+  runInit();
+}
+</script>
+</body>
+</html>
