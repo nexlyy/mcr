@@ -1,12 +1,4 @@
-
-      if (div.cls === 'mine' || div.cls === 'recycling') {
-        var catBtnSvc = document.createElement('button');
-        catBtnSvc.className = 'catalog-btn';
-        (function(cls){ catBtnSvc.addEventListener('click', function(){ showCatalog(cls); }); })(div.cls);
-        var catLabelsSvc = {en:'View Catalogue',es:'Ver Cat\u00e1logo',pl:'Katalog Produkt\u00f3w'};
-        catBtnSvc.textContent = catLabelsSvc[lang] || 'View Catalogue';
-        left.appendChild(catBtnSvc);
-      }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
