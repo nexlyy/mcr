@@ -232,9 +232,9 @@ var UI = {
     "ui.scroll":"Scroll","ui.directions":"Our Expertise","ui.pillars":"",
     "ui.about":"About Us","ui.contact":"Get in Touch","ui.company":"Company",
     "ui.email":"Email","ui.phone":"Phone","ui.fname":"Your Name",
-    "ui.femail":"Email Address","ui.fdir":"Direction of Interest",
+    "ui.femail":"Email Address","ui.fdir":"Area of Interest",
     "ui.fmsg":"Message","ui.fsend":"Send Message",
-    "ui.back":"Back to Directions","div.construction":"Construction","div.recycling":"Recycling",
+    "ui.back":"Back to Expertise","div.construction":"Construction","div.recycling":"Recycling",
     "hero.tagline":"Engineering · Geology · Innovation",
     "hero.sub":"Mine<br>&middot;<br>Construction<br>&middot;<br>Recycling",
     "ui.readmore":"Read full section →","ui.searchph":"Search services..."
@@ -244,9 +244,9 @@ var UI = {
     "ui.scroll":"Desplazar","ui.directions":"Nuestra Especialidad","ui.pillars":"",
     "ui.about":"Sobre Nosotros","ui.contact":"Contáctenos","ui.company":"Empresa",
     "ui.email":"Correo","ui.phone":"Teléfono","ui.fname":"Su Nombre",
-    "ui.femail":"Correo Electrónico","ui.fdir":"Dirección de Interés",
+    "ui.femail":"Correo Electrónico","ui.fdir":"Área de Interés",
     "ui.fmsg":"Mensaje","ui.fsend":"Enviar Mensaje",
-    "ui.back":"Volver a Direcciones","div.construction":"Construcción","div.recycling":"Reciclaje",
+    "ui.back":"Volver a Especialidad","div.construction":"Construcción","div.recycling":"Reciclaje",
     "hero.tagline":"Ingeniería · Geología · Innovación",
     "hero.sub":"Minería<br>&middot;<br>Construcción<br>&middot;<br>Reciclaje",
     "ui.readmore":"Leer sección completa →","ui.searchph":"Buscar servicios..."
@@ -256,9 +256,9 @@ var UI = {
     "ui.scroll":"Przewiń","ui.directions":"Nasza Specjalizacja","ui.pillars":"",
     "ui.about":"O Nas","ui.contact":"Skontaktuj Się","ui.company":"Firma",
     "ui.email":"E-mail","ui.phone":"Telefon","ui.fname":"Twoje Imię",
-    "ui.femail":"Adres E-mail","ui.fdir":"Kierunek Zainteresowania",
+    "ui.femail":"Adres E-mail","ui.fdir":"Obszar Zainteresowania",
     "ui.fmsg":"Wiadomość","ui.fsend":"Wyślij Wiadomość",
-    "ui.back":"Powrót do Kierunków","div.construction":"Budownictwo","div.recycling":"Recykling",
+    "ui.back":"Powrót do Specjalizacji","div.construction":"Budownictwo","div.recycling":"Recykling",
     "hero.tagline":"Inżynieria · Geologia · Innowacja",
     "hero.sub":"Górnictwo<br>&middot;<br>Budownictwo<br>&middot;<br>Recykling",
     "ui.readmore":"Czytaj pełną sekcję →","ui.searchph":"Szukaj usług..."
@@ -267,6 +267,21 @@ var UI = {
 
 
 /* Smooth scroll polyfill — works on all iOS */
+function goToTop(e){
+  if(e && e.preventDefault) e.preventDefault();
+  /* Если открыто мобильное меню — закрываем */
+  if(typeof closeMenu === 'function') closeMenu();
+  /* Если открыт каталог — закрываем его и ждём окончания transition */
+  var ov = document.getElementById('catalog-overlay');
+  if(ov && ov.className.indexOf('open') >= 0){
+    if(typeof hideCatalog === 'function') hideCatalog();
+    setTimeout(function(){ smoothScrollTo(0); }, 420);
+    return false;
+  }
+  smoothScrollTo(0);
+  return false;
+}
+
 function smoothScrollTo(targetY) {
   var startY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
   var diff = targetY - startY;
@@ -729,7 +744,7 @@ function runInit() {
   }
 }
 
-/* runInit() больше не регистрируется — boot() ниже вызывает safeInit() один раз */
+/* runInit() больше не регистрируется здесь — boot() ниже вызывает safeInit() один раз */
 
 /* ══════════════════════════════════════
    АВТО-ЯЗЫК
@@ -1694,7 +1709,6 @@ function renderCatalogue() {
   Object.keys(CATALOGUE).forEach(function(div) {
     if (currentFilter !== 'all' && currentFilter !== div) return;
     var items = CATALOGUE[div] || [];
-    /* При конкретном фильтре всегда показываем заголовок, даже пустой */
     if (items.length === 0 && currentFilter === 'all') return;
     if (items.length > 0) hasContent = true;
     var divName = (divNamesMap[div] && divNamesMap[div][cl]) || divNamesMap[div].en;
@@ -1925,7 +1939,7 @@ function catCloseMenu() {
   document.body.style.overflow = '';
 }
 
-/* ══ МОБИЛЬНЫЙ ПОИСК КАТАЛОГА — только по CATALOGUE, в текущем языке ══ */
+/* ══ Мобильный поиск каталога (текущий язык) ══ */
 function catOpenMobSearch(){
   var ov = document.getElementById('cat-mob-search-overlay');
   var f = document.getElementById('cat-mob-search-field');
@@ -1954,10 +1968,7 @@ function catRunMobSearch(q){
   if(q.length < 1){ rs.classList.remove('open'); rs.innerHTML=''; return; }
   if(typeof CATALOGUE === 'undefined'){ rs.innerHTML=''; rs.classList.remove('open'); return; }
   var cl = (typeof lang !== 'undefined') ? lang : 'en';
-  var divLabels = {
-    mine:{en:'Mine',es:'Minería',pl:'Górnictwo'},
-    recycling:{en:'Recycling',es:'Reciclaje',pl:'Recykling'}
-  };
+  var divLabels = {mine:{en:'Mine',es:'Minería',pl:'Górnictwo'},recycling:{en:'Recycling',es:'Reciclaje',pl:'Recykling'}};
   var emptyMsg = {en:'No results',es:'Sin resultados',pl:'Brak wyników'};
   var hits = [];
   Object.keys(CATALOGUE).forEach(function(div){
