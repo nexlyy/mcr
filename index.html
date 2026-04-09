@@ -18,9 +18,9 @@
 <!-- EmailJS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  window.EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY_HERE";
-  window.EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID_HERE";
-  window.EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID_HERE";
+  window.EMAILJS_PUBLIC_KEY  = "ikeGLtLDgOWFKLUcm";
+  window.EMAILJS_SERVICE_ID  = "service_qatj6f8";
+  window.EMAILJS_TEMPLATE_ID = "template_24anq2o";
   if (window.emailjs && window.EMAILJS_PUBLIC_KEY && window.EMAILJS_PUBLIC_KEY.indexOf("YOUR_") !== 0) {
     try { emailjs.init({ publicKey: window.EMAILJS_PUBLIC_KEY }); } catch(e) { console.warn("EmailJS init failed:", e); }
   }
@@ -50,7 +50,7 @@
 <div id="loading"><div class="loading-logo">MCR</div></div>
 
 <nav>
-  <a class="nav-logo" href="#top">MCR Planet</a>
+  <a class="nav-logo" href="#top" onclick="goToTop(event)">MCR Planet</a>
   <ul class="nav-center">
     <li><a href="#overview" data-i18n="nav.directions">Directions</a></li>
     <li><a href="#about" data-i18n="nav.about">About Us</a></li>
